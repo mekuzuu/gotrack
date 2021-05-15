@@ -1,6 +1,8 @@
 package main
 
+import "gotrack/courie/yamato"
+
 func main() {
-	y := Yamato{}
-	y.FindShipments([]string{"397006850170"})
+	y := yamato.NewYamato()
+	y.FindShipments([]string{"397006850170", "397006850170"})
 }
