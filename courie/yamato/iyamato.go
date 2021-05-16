@@ -1,7 +1,7 @@
 package yamato
 
-import "gotrack/shipment"
+import "gotrack/tablewriter"
 
 type IYamato interface {
-	FindShipments(ids []string) ([]shipment.Shipment, error)
+	FindShipmentsTable(ids []string) (*tablewriter.TableWriterModel, error)
 }

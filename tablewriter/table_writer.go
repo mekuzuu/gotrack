@@ -16,9 +16,9 @@ func NewTableWriter(w io.Writer) *tableWriter {
 	}
 }
 
-func (t *tableWriter) Write(header []string, data [][]string) {
-	t.table.SetHeader(header)
-	for _, v := range data {
+func (t *tableWriter) Write(table *TableWriterModel) {
+	t.table.SetHeader(table.Header)
+	for _, v := range table.Data {
 		t.table.Append(v)
 	}
 	t.table.Render()
