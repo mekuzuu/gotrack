@@ -2,15 +2,12 @@ package yamato
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
 	"gotrack/tablewriter"
 
 	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/text/encoding/japanese"
-	"golang.org/x/text/transform"
 )
 
 // cf. https://qiita.com/the_red/items/39eea9ea20f5a81d66e7#web-api%E7%9A%84%E3%81%AA%E4%BB%95%E6%A7%98
@@ -25,21 +22,30 @@ const (
 const (
 	tableHeaderDescription = "商品名"
 	tableHeaderETA         = "お届け予定日時"
+	tableHeaderStatus      = "荷物状況"
+	tableHeaderDate        = "日付"
+	tableHeaderTime        = "時刻"
+	tableHeaderStoreName   = "担当店名"
+	tableHeaderStoreCode   = "担当店名コード"
 )
 
-type yamato struct {
-}
+type yamato struct{}
 
 func NewYamato() yamato {
 	return yamato{}
 }
 
 type shipment struct {
-	itemName string
-	eta      string
+	itemName  string
+	eta       string
+	status    string
+	date      string
+	time      string
+	storeName string
+	storeCode string
 }
 
-func (y *yamato) FindShipmentsTable(ids []string) (*tablewriter.TableWriterModel, error) {
+func (y *yamato) FindShipmentsTable(ids []string) (*tablewriter.TableWriter, error) {
 	queryParams := url.Values{}
 	queryParams.Add(detailKey, detailValNeed)
 
@@ -47,49 +53,29 @@ func (y *yamato) FindShipmentsTable(ids []string) (*tablewriter.TableWriterModel
 		queryParams.Add(fmt.Sprintf("number%02d", numberFrom+i), id)
 	}
 
-	resp, err := http.PostForm(truckingURL, queryParams)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+	//resp, err := http.PostForm(truckingURL, queryParams)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//defer resp.Body.Close()
+	//
+	//reader := transform.NewReader(resp.Body, japanese.ShiftJIS.NewDecoder())
+	//
+	reader := strings.NewReader(
+		"<table class=\"meisaibase\">\n<tbody><tr>\n <th width=\"50%\">商品名</th>\n <th width=\"50%\">お届け予定日時</th>\n</tr>\n<tr>\n <td nowrap=\"\">宅急便<br></td>\n <td nowrap=\"\">05/13　08:00-12:00<br></td>\n</tr>\n</tbody></table>" +
+			"<table class=\"meisaibase\">\n<tbody><tr>\n <th width=\"50%\">商品名</th>\n <th width=\"50%\">お届け予定日時</th>\n</tr>\n<tr>\n <td nowrap=\"\">宅急便<br></td>\n <td nowrap=\"\">05/13　08:00-12:00<br></td>\n</tr>\n</tbody></table>",
+	)
 
-	reader := transform.NewReader(resp.Body, japanese.ShiftJIS.NewDecoder())
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
 		return nil, err
 	}
 
-	shipments := make([]shipment, len(ids))
-	doc.Find("table.meisaibase").Each(func(i int, s *goquery.Selection) {
-		meisaiBase := s.Find("tr").Next().Text()
-		replaced := strings.Replace(meisaiBase, "\n", ",", -1)
-		split := strings.Split(replaced, ",")
+	headers := parseHeaders(doc, parseMeisaiBaseHeaders())
+	data := parseBody(doc, parseMeisaiBaseData())
 
-		shipments[i].itemName = split[1]
-		shipments[i].eta = split[2]
-	})
-
-	return &tablewriter.TableWriterModel{
-		Header: y.genTableHeaderStrings(),
-		Data:   y.shipmentsToData(shipments),
+	return &tablewriter.TableWriter{
+		Header: headers,
+		Data:   data,
 	}, nil
-}
-
-func (y *yamato) genTableHeaderStrings() []string {
-	return []string{
-		tableHeaderDescription,
-		tableHeaderETA,
-	}
-}
-
-func (y *yamato) shipmentsToData(shipments []shipment) [][]string {
-	var data [][]string
-	for _, shipment := range shipments {
-		data = append(data, []string{
-			shipment.itemName,
-			shipment.eta,
-		})
-	}
-
-	return data
 }

@@ -16,7 +16,12 @@ func NewTableWriter(w io.Writer) *tableWriter {
 	}
 }
 
-func (t *tableWriter) Write(table *TableWriterModel) {
+type TableWriter struct {
+	Header []string
+	Data   [][]string
+}
+
+func (t *tableWriter) Write(table *TableWriter) {
 	t.table.SetHeader(table.Header)
 	for _, v := range table.Data {
 		t.table.Append(v)
