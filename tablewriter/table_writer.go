@@ -26,5 +26,6 @@ func (t *tableWriter) Write(table *TableWriter) {
 	for _, v := range table.Data {
 		t.table.Append(v)
 	}
+	t.table.SetAutoMergeCells(true)
 	t.table.Render()
 }
