@@ -27,6 +27,7 @@ func NewYamatoOperator(
 	}
 }
 
+// TODO: 複数の伝票番号に対応する
 func (op *yamatoOperator) TrackShipments(ids []string) error {
 	queryParams := url.Values{}
 	queryParams.Add("number00", "1")
