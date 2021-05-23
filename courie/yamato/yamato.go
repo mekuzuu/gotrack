@@ -7,6 +7,8 @@ import (
 
 	"gotrack/tablewriter"
 
+	"github.com/thoas/go-funk"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -74,6 +76,8 @@ func (y *yamatoOperator) parseHeader(doc *goquery.Document) []string {
 		header = append(header, smb[i])
 	}
 
+	header = append(header, "#")
+
 	m := doc.Find("table.meisai").Find("tr").Text()
 	sm := strings.Split(m, "\n")
 
@@ -87,7 +91,7 @@ func (y *yamatoOperator) parseHeader(doc *goquery.Document) []string {
 
 func (y *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 	var data [][]string
-	var id, item, eta string
+	var id, item, eta, stMark string
 	doc.Find("table.saisin").Each(func(i int, s *goquery.Selection) {
 		ss := s.Find("td.bold").Text()
 		// 伝票番号の開始位置と終了位置(13:27)
@@ -118,7 +122,13 @@ func (y *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 			}
 
 			if len(ms) == 5 {
-				ms = append([]string{id, item, eta}, ms...)
+				if funk.Contains(ms, " 配達完了") {
+					stMark = "📦"
+				} else {
+					stMark = "↓"
+				}
+
+				ms = append([]string{id, item, eta, stMark}, ms...)
 				data = append(data, ms)
 			}
 		}
