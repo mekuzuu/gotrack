@@ -6,26 +6,22 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-type tableWriter struct {
+type tableWriterOperator struct {
 	table *tablewriter.Table
 }
 
-func NewTableWriter(w io.Writer) *tableWriter {
-	return &tableWriter{
-		table: tablewriter.NewWriter(w),
+func NewTableWriterOperator(os io.Writer) *tableWriterOperator {
+	return &tableWriterOperator{
+		table: tablewriter.NewWriter(os),
 	}
 }
 
-type TableWriter struct {
-	Header []string
-	Data   [][]string
-}
-
-func (t *tableWriter) Write(table *TableWriter) {
-	t.table.SetHeader(table.Header)
-	for _, v := range table.Data {
+func (t *tableWriterOperator) Write(header []string, data [][]string) {
+	t.table.SetHeader(header)
+	for _, v := range data {
 		t.table.Append(v)
 	}
+
 	t.table.SetAutoMergeCells(true)
 	t.table.Render()
 }

@@ -15,13 +15,19 @@ const (
 	truckingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
 )
 
-type yamato struct{}
-
-func NewYamato() yamato {
-	return yamato{}
+type yamatoOperator struct {
+	tableWriter tablewriter.ITableWriterOperator
 }
 
-func (y *yamato) FindShipmentsTable(ids []string) (*tablewriter.TableWriter, error) {
+func NewYamatoOperator(
+	tableWriter tablewriter.ITableWriterOperator,
+) *yamatoOperator {
+	return &yamatoOperator{
+		tableWriter: tableWriter,
+	}
+}
+
+func (op *yamatoOperator) TrackShipments(ids []string) error {
 	queryParams := url.Values{}
 	queryParams.Add("number00", "1")
 
@@ -46,16 +52,15 @@ func (y *yamato) FindShipmentsTable(ids []string) (*tablewriter.TableWriter, err
 
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &tablewriter.TableWriter{
-		Header: y.parseHeader(doc),
-		Data:   y.parseData(doc),
-	}, nil
+	op.tableWriter.Write(op.parseHeader(doc), op.parseData(doc))
+
+	return nil
 }
 
-func (y *yamato) parseHeader(doc *goquery.Document) []string {
+func (y *yamatoOperator) parseHeader(doc *goquery.Document) []string {
 	var header []string
 	ss := doc.Find("table.saisin").Find("td.bold").Text()
 	header = append(header, ss[:strings.Index(ss, " ")])
@@ -79,7 +84,7 @@ func (y *yamato) parseHeader(doc *goquery.Document) []string {
 	return header
 }
 
-func (y *yamato) parseData(doc *goquery.Document) [][]string {
+func (y *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 	var data [][]string
 	var id, item, eta string
 	doc.Find("table.saisin").Each(func(i int, s *goquery.Selection) {

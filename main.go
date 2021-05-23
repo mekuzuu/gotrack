@@ -8,11 +8,10 @@ import (
 )
 
 func main() {
-	t := tablewriter.NewTableWriter(os.Stdout)
-	y := yamato.NewYamato()
-	table, err := y.FindShipmentsTable([]string{})
+	tableWriterOP := tablewriter.NewTableWriterOperator(os.Stdout)
+	yamatoOP := yamato.NewYamatoOperator(tableWriterOP)
+	err := yamatoOP.TrackShipments([]string{})
 	if err != nil {
 		panic(err)
 	}
-	t.Write(table)
 }
