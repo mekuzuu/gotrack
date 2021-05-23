@@ -6,6 +6,13 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+type TableWriterParameter struct {
+	Header                  []string
+	Data                    [][]string
+	EnableMergeCells        bool
+	MergeCellsByColumnIndex []int
+}
+
 type tableWriterOperator struct {
 	table *tablewriter.Table
 }
@@ -16,12 +23,20 @@ func NewTableWriterOperator(os io.Writer) *tableWriterOperator {
 	}
 }
 
-func (t *tableWriterOperator) Write(header []string, data [][]string) {
-	t.table.SetHeader(header)
-	for _, v := range data {
+func (t *tableWriterOperator) Write(param *TableWriterParameter) {
+	t.table.SetHeader(param.Header)
+	for _, v := range param.Data {
 		t.table.Append(v)
 	}
-
-	t.table.SetAutoMergeCells(true)
+	t.setOptions(param)
 	t.table.Render()
+}
+
+func (t *tableWriterOperator) setOptions(param *TableWriterParameter) {
+	t.table.SetAutoMergeCells(param.EnableMergeCells)
+
+	// 何も指定しなくともtrueを設定されてしまうため、指定がある場合のみオプションを設定するようにしている
+	if len(param.MergeCellsByColumnIndex) > 0 {
+		t.table.SetAutoMergeCellsByColumnIndex(param.MergeCellsByColumnIndex)
+	}
 }

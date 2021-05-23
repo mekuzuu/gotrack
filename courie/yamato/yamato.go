@@ -58,7 +58,11 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 		return err
 	}
 
-	op.tableWriter.Write(op.parseHeader(doc), op.parseData(doc))
+	op.tableWriter.Write(&tablewriter.TableWriterParameter{
+		Header:                  op.parseHeader(doc),
+		Data:                    op.parseData(doc),
+		MergeCellsByColumnIndex: []int{0, 1, 2},
+	})
 
 	return nil
 }
