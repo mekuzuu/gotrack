@@ -62,7 +62,7 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 	return nil
 }
 
-func (y *yamatoOperator) parseHeader(doc *goquery.Document) []string {
+func (op *yamatoOperator) parseHeader(doc *goquery.Document) []string {
 	var header []string
 	ss := doc.Find("table.saisin").Find("td.bold").Text()
 	header = append(header, ss[:strings.Index(ss, " ")])
@@ -88,7 +88,7 @@ func (y *yamatoOperator) parseHeader(doc *goquery.Document) []string {
 	return header
 }
 
-func (y *yamatoOperator) parseData(doc *goquery.Document) [][]string {
+func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 	var data [][]string
 	var id, item, eta, stMark string
 	doc.Find("table.saisin").Each(func(i int, s *goquery.Selection) {
