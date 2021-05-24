@@ -29,7 +29,7 @@ func main() {
 func run() int {
 	flag.Parse()
 	if *flagYamato != "" {
-		if err := yamatoOP.TrackShipments([]string{}); err != nil {
+		if err := yamatoOP.TrackShipments([]string{*flagYamato}); err != nil {
 			return 1
 		}
 	}

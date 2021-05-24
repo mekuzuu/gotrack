@@ -2,10 +2,14 @@ package yamato
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 
 	"gotrack/tablewriter"
+
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/transform"
 
 	"github.com/thoas/go-funk"
 
@@ -39,19 +43,13 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 		queryParams.Add(fmt.Sprintf("number%02d", 1+i), id)
 	}
 
-	//resp, err := http.PostForm(truckingURL, queryParams)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer resp.Body.Close()
-	//
-	//reader := transform.NewReader(resp.Body, japanese.ShiftJIS.NewDecoder())
-	//
-	reader := strings.NewReader(
-		"<table class=\"saisin\">\n<tbody><tr>\n <td class=\"image\"><img src=\"/images/arrow_001.gif\" alt=\"最新\"></td>\n <td class=\"number\">　１件目</td>\n <td class=\"bold\">伝票番号 3970-0685-0170</td>\n</tr>\n<tr>\n <td rowspan=\"3\"><br></td>\n <td rowspan=\"3\"><br></td>\n <td class=\"font14\">配達完了</td>\n</tr>\n<tr>\n <td class=\"bold\">このお品物はお届けが済んでおります。</td>\n</tr>\n<tr>\n <td>お問い合わせはサービスセンターまでお願いいたします。</td>\n</tr>\n</tbody></table>" +
-			"<table class=\"meisaibase\">\n<tbody><tr>\n <th width=\"50%\">商品名</th>\n <th width=\"50%\">お届け予定日時</th>\n</tr>\n<tr>\n <td nowrap=\"\">宅急便<br></td>\n <td nowrap=\"\">05/13　08:00-12:00<br></td>\n</tr>\n</tbody></table>" +
-			"<table class=\"meisai\">\n<tbody><tr>\n <th width=\"55\"><br></th>\n <th>荷物状況</th>\n <th>日 付</th>\n <th>時 刻</th>\n <th>担当店名</th>\n <th>担当店コード</th>\n</tr>\n<tr class=\"odd\">\n <td class=\"image\"><img src=\"/images/ya_02.gif\" alt=\"経過\"></td>\n <td>荷物受付</td>\n <td>05/12</td>\n <td>15:31</td>\n <td>芝浦３丁目センター</td>\n <td>136251</td>\n</tr>\n<tr class=\"even\">\n <td class=\"image\"><img src=\"/images/ya_02.gif\" alt=\"経過\"></td>\n <td>発送</td>\n <td>05/12</td>\n <td>15:31</td>\n <td><a href=\"http://sneko2.kuronekoyamato.co.jp/sneko2/Sngp?ID=NET_C&amp;JC=136251&amp;DN=&amp;MD=&amp;F=2\" target=\"_blank\">芝浦３丁目センター</a></td>\n <td>136251</td>\n</tr>\n<tr class=\"odd\">\n <td class=\"image\"><img src=\"/images/ya_02.gif\" alt=\"経過\"></td>\n <td>作業店通過</td>\n <td>05/13</td>\n <td>04:13</td>\n <td>中部ゲートウェイベース</td>\n <td>053990</td>\n</tr>\n<tr class=\"even\">\n <td class=\"image\"><img src=\"/images/nimotsu_01.gif\" alt=\"最新\"></td>\n <td>配達完了</td>\n <td>05/13</td>\n <td>10:58</td>\n <td><a href=\"http://sneko2.kuronekoyamato.co.jp/sneko2/Sngp?ID=NET_C&amp;JC=053212&amp;DN=&amp;MD=&amp;F=2\" target=\"_blank\">岡崎六名センター</a></td>\n <td>053212</td>\n</tr>\n</tbody></table>",
-	)
+	resp, err := http.PostForm(truckingURL, queryParams)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	reader := transform.NewReader(resp.Body, japanese.ShiftJIS.NewDecoder())
 
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
