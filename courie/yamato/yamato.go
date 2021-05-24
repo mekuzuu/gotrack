@@ -16,20 +16,17 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// cf. https://qiita.com/the_red/items/39eea9ea20f5a81d66e7#web-api%E7%9A%84%E3%81%AA%E4%BB%95%E6%A7%98
-const (
-	truckingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
-)
+const truckingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
 
 type yamatoOperator struct {
-	tableWriter tablewriter.ITableWriterOperator
+	tableWriterOP tablewriter.ITableWriterOperator
 }
 
 func NewYamatoOperator(
-	tableWriter tablewriter.ITableWriterOperator,
+	tableWriterOP tablewriter.ITableWriterOperator,
 ) *yamatoOperator {
 	return &yamatoOperator{
-		tableWriter: tableWriter,
+		tableWriterOP: tableWriterOP,
 	}
 }
 
@@ -56,7 +53,7 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 		return err
 	}
 
-	op.tableWriter.Write(&tablewriter.TableWriterParameter{
+	op.tableWriterOP.Write(&tablewriter.TableWriterParameter{
 		Header:                  op.parseHeader(doc),
 		Data:                    op.parseData(doc),
 		MergeCellsByColumnIndex: []int{0, 1, 2},
