@@ -112,7 +112,7 @@ func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 
 		var ms = make([]string, 0, 7)
 		for _, v := range sm {
-			if isEmpty(v) || isSpace(v) {
+			if isEmpty(v) || isWhiteSpace(v) {
 				ms = nil
 				continue
 			}
@@ -140,6 +140,6 @@ func isEmpty(s string) bool {
 	return s == ""
 }
 
-func isSpace(s string) bool {
+func isWhiteSpace(s string) bool {
 	return s == " "
 }
