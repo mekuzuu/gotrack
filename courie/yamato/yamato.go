@@ -54,7 +54,7 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 	}
 
 	op.tableWriterOP.Write(&tablewriter.TableWriterParameter{
-		Header:                  op.parseHeader(doc),
+		Header:                  op.headers(),
 		Data:                    op.parseData(doc),
 		MergeCellsByColumnIndex: []int{0, 1, 2},
 	})
@@ -62,30 +62,19 @@ func (op *yamatoOperator) TrackShipments(ids []string) error {
 	return nil
 }
 
-func (op *yamatoOperator) parseHeader(doc *goquery.Document) []string {
-	var header []string
-	ss := doc.Find("table.saisin").Find("td.bold").Text()
-	header = append(header, ss[:strings.Index(ss, " ")])
-
-	mb := doc.Find("table.meisaibase").Find("tr").Text()
-	smb := strings.Split(mb, "\n")
-
-	// 配列の1-3番目までの値を使いたい
-	for i := 1; i < 3; i++ {
-		header = append(header, smb[i])
+// header文字列の配列を生成して返す
+func (op *yamatoOperator) headers() []string {
+	return []string{
+		"伝票番号",
+		"商品名",
+		"お届け予定日時",
+		"#",
+		"荷物状況",
+		"日付",
+		"時刻",
+		"担当店名",
+		"担当店コード",
 	}
-
-	header = append(header, "#")
-
-	m := doc.Find("table.meisai").Find("tr").Text()
-	sm := strings.Split(m, "\n")
-
-	// 配列の2-7番目までの値を使いたい
-	for i := 2; i < 7; i++ {
-		header = append(header, sm[i])
-	}
-
-	return header
 }
 
 func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
