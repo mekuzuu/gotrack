@@ -33,8 +33,6 @@ func (t *tableWriterOperator) Write(param *TableWriterParameter) {
 }
 
 func (t *tableWriterOperator) setOptions(param *TableWriterParameter) {
-	t.table.SetAutoMergeCells(param.EnableMergeCells)
-
 	// 何も指定しなくともtrueを設定されてしまうため、指定がある場合のみオプションを設定するようにしている
 	if len(param.MergeCellsByColumnIndex) > 0 {
 		t.table.SetAutoMergeCellsByColumnIndex(param.MergeCellsByColumnIndex)

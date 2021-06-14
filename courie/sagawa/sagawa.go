@@ -32,28 +32,33 @@ func (op *sagawaOperator) TrackShipment(id string) error {
 
 	//reader := transform.NewReader(resp.Body, japanese.ShiftJIS.NewDecoder())
 
-	reader := strings.NewReader(
-		"<table class=\"table_basic ttl01\">\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t<tbody><tr>\n\t\t\t\t\t\t\t\t\t\t\t<th class=\"detail\">詳細</th>\n\t\t\t\t\t\t\t\t\t\t\t<th class=\"number\">お問い合せ送り状NO</th>\n\t\t\t\t\t\t\t\t\t\t\t<th>最新荷物状況</th>\n\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t</tbody></table>",
-	)
+	reader := strings.NewReader("<dl class=\"okurijo_info\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<dt>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t再配達希望日時：\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</dt>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<dd>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t05月25日　午前中")
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
 		return err
 	}
 
 	op.tableWriterOP.Write(&tablewriter.TableWriterParameter{
-		Header: op.parseHeader(doc),
+		Header: op.headers(),
 		Data:   op.parseData(doc),
 	})
 
 	return nil
 }
 
-func (op *sagawaOperator) parseHeader(doc *goquery.Document) []string {
-	var header []string
-	no := doc.Find("table.table_basic.ttl01").Text()
-	header = append(header, no)
-
-	return header
+// header文字列の配列を生成して返す
+func (op *sagawaOperator) headers() []string {
+	return []string{
+		"お問い合せ送り状NO",
+		"お届け予定日時",
+		"出荷日",
+		"集荷営業所",
+		"配達営業所",
+		"お荷物個数",
+		"荷物状況",
+		"日時",
+		"担当営業所",
+	}
 }
 
 func (op *sagawaOperator) parseData(doc *goquery.Document) [][]string {
