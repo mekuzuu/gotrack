@@ -101,23 +101,24 @@ func (op *sagawaOperator) parseData(doc *goquery.Document) [][]string {
 	})
 
 	var data [][]string
-	var ms = make([]string, 0, 9)
-	std = std[38:len(std)]
+	var items = make([]string, 0, 9)
+	deliveryStatus := std[38:len(std)]
 
-	for _, v := range std {
+	for _, v := range deliveryStatus {
 		if isEmpty(v) || isWhiteSpace(v) {
 			continue
 		}
 
-		if len(ms) < 3 {
-			ms = append(ms, v)
+		if len(items) < 3 {
+			items = append(items, v)
 		}
 
-		if len(ms) == 3 {
-			ms = append([]string{id, etaOr, shipDate, pickUp, delivery, itemNum}, ms...)
-			data = append(data, ms)
+		if len(items) == 3 {
+			items = append([]string{id, etaOr, shipDate, pickUp, delivery, itemNum}, items...)
+			data = append(data, items)
 
-			ms = nil
+			// sliceをリセットする
+			items = nil
 		}
 	}
 

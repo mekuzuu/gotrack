@@ -78,7 +78,6 @@ func (op *yamatoOperator) headers() []string {
 }
 
 func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
-	var data [][]string
 	var id, item, eta, stMark string
 	doc.Find("table.saisin").Each(func(i int, s *goquery.Selection) {
 		ss := s.Find("td.bold").Text()
@@ -95,29 +94,32 @@ func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 	})
 
 	// HACK:
+	var data [][]string
 	doc.Find("table.meisai").Each(func(i int, s *goquery.Selection) {
 		m := s.Find("tr").Next().Text()
-		sm := strings.Split(m, "\n")
+		deleiveryStatus := strings.Split(m, "\n")
 
-		var ms = make([]string, 0, 7)
-		for _, v := range sm {
+		var items = make([]string, 0, 7)
+		for _, v := range deleiveryStatus {
 			if isEmpty(v) || isWhiteSpace(v) {
-				ms = nil
 				continue
 			}
-			if len(ms) < 5 {
-				ms = append(ms, v)
+			if len(items) < 5 {
+				items = append(items, v)
 			}
 
-			if len(ms) == 5 {
-				if funk.Contains(ms, " 配達完了") {
+			if len(items) == 5 {
+				if funk.Contains(items, " 配達完了") {
 					stMark = "📦"
 				} else {
 					stMark = "↓"
 				}
 
-				ms = append([]string{id, item, eta, stMark}, ms...)
-				data = append(data, ms)
+				items = append([]string{id, item, eta, stMark}, items...)
+				data = append(data, items)
+
+				// sliceをリセットする
+				items = nil
 			}
 		}
 	})
