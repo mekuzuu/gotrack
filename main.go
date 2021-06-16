@@ -40,10 +40,6 @@ func run() int {
 		}
 	}
 
-	if err := yamatoOP.TrackShipments([]string{"397006850170"}); err != nil {
-		return 1
-	}
-
 	if *flagSagawa != "" {
 		if err := sagawaOP.TrackShipment(*flagSagawa); err != nil {
 			fmt.Println(err.Error())
@@ -51,9 +47,9 @@ func run() int {
 		}
 	}
 
-	//if err := sagawaOP.TrackShipment("191491888534"); err != nil {
-	//	fmt.Println(err.Error())
-	//}
+	if err := sagawaOP.TrackShipment("191491888534"); err != nil {
+		fmt.Println(err.Error())
+	}
 
 	return 0
 }

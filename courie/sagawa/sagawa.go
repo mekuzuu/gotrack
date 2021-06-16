@@ -43,8 +43,11 @@ func (op *sagawaOperator) TrackShipment(id string) error {
 	}
 
 	op.tableWriterOP.Write(&tablewriter.TableWriterParameter{
-		Header: op.headers(),
-		Data:   op.parseData(doc),
+		Header:                   op.headers(),
+		Data:                     op.parseData(doc),
+		MergeCellsByColumnIndex:  []int{0, 1, 2, 5},
+		SetHeaderAlignmentCenter: true,
+		SetAlignmentCenter:       true,
 	})
 
 	return nil

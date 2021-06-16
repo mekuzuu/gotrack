@@ -7,10 +7,12 @@ import (
 )
 
 type TableWriterParameter struct {
-	Header                  []string
-	Data                    [][]string
-	EnableMergeCells        bool
-	MergeCellsByColumnIndex []int
+	Header                   []string
+	Data                     [][]string
+	EnableMergeCells         bool
+	MergeCellsByColumnIndex  []int
+	SetHeaderAlignmentCenter bool
+	SetAlignmentCenter       bool
 }
 
 type tableWriterOperator struct {
@@ -36,5 +38,13 @@ func (t *tableWriterOperator) setOptions(param *TableWriterParameter) {
 	// 何も指定しなくともtrueを設定されてしまうため、指定がある場合のみオプションを設定するようにしている
 	if len(param.MergeCellsByColumnIndex) > 0 {
 		t.table.SetAutoMergeCellsByColumnIndex(param.MergeCellsByColumnIndex)
+	}
+
+	if param.SetHeaderAlignmentCenter {
+		t.table.SetHeaderAlignment(tablewriter.ALIGN_CENTER)
+	}
+
+	if param.SetAlignmentCenter {
+		t.table.SetAlignment(tablewriter.ALIGN_CENTER)
 	}
 }
