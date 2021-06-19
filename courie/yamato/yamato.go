@@ -1,7 +1,6 @@
 package yamato
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,15 +29,10 @@ func NewYamatoOperator(
 	}
 }
 
-// TODO: 複数の伝票番号に対応する
-func (op *yamatoOperator) TrackShipments(ids []string) error {
+func (op *yamatoOperator) TrackShipments(id string) error {
 	queryParams := url.Values{}
 	queryParams.Add("number00", "1")
-
-	for i, id := range ids {
-		// 伝票番号のパラメータの形式がnumber01～number10なので、1はじまり
-		queryParams.Add(fmt.Sprintf("number%02d", 1+i), id)
-	}
+	queryParams.Add("number01", id)
 
 	resp, err := http.PostForm(truckingURL, queryParams)
 	if err != nil {

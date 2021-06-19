@@ -1,5 +1,5 @@
 package yamato
 
 type IYamatoOperator interface {
-	TrackShipments(ids []string) error
+	TrackShipments(id string) error
 }

@@ -34,7 +34,7 @@ func main() {
 func run() int {
 	flag.Parse()
 	if *flagYamato != "" {
-		if err := yamatoOP.TrackShipments([]string{*flagYamato}); err != nil {
+		if err := yamatoOP.TrackShipments(*flagYamato); err != nil {
 			fmt.Println(err.Error())
 			return 1
 		}
