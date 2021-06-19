@@ -47,9 +47,5 @@ func run() int {
 		}
 	}
 
-	if err := sagawaOP.TrackShipment("191491888534"); err != nil {
-		fmt.Println(err.Error())
-	}
-
 	return 0
 }
