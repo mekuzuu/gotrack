@@ -2,7 +2,6 @@ package yamato
 
 import (
 	"net/http"
-	"net/url"
 	"strings"
 
 	"gotrack/tablewriter"
@@ -15,7 +14,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const trackingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
+//const trackingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
+const trackingURL = "http://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id="
 
 type yamatoOperator struct {
 	tableWriterOP tablewriter.ITableWriterOperator
@@ -30,11 +30,7 @@ func NewYamatoOperator(
 }
 
 func (op *yamatoOperator) TrackShipments(id string) error {
-	queryParams := url.Values{}
-	queryParams.Add("number00", "1")
-	queryParams.Add("number01", id)
-
-	resp, err := http.PostForm(trackingURL, queryParams)
+	resp, err := http.Get(trackingURL + id)
 	if err != nil {
 		return err
 	}
@@ -58,7 +54,6 @@ func (op *yamatoOperator) TrackShipments(id string) error {
 	return nil
 }
 
-// header文字列の配列を生成して返す
 func (op *yamatoOperator) headers() []string {
 	return []string{
 		"伝票番号",
@@ -77,7 +72,6 @@ func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 	var id, item, eta, stMark string
 	doc.Find("table.saisin").Each(func(i int, s *goquery.Selection) {
 		ss := s.Find("td.bold").Text()
-		// 伝票番号の開始位置と終了位置(13:27)
 		id = ss[13:27]
 	})
 
@@ -114,7 +108,6 @@ func (op *yamatoOperator) parseData(doc *goquery.Document) [][]string {
 				items = append([]string{id, item, eta, stMark}, items...)
 				data = append(data, items)
 
-				// sliceをリセットする
 				items = nil
 			}
 		}

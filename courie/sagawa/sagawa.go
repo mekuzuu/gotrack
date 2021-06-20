@@ -47,7 +47,6 @@ func (op *sagawaOperator) TrackShipment(id string) error {
 	return nil
 }
 
-// header文字列の配列を生成して返す
 func (op *sagawaOperator) headers() []string {
 	return []string{
 		"お問い合せ送り状NO",
@@ -114,7 +113,6 @@ func (op *sagawaOperator) parseData(doc *goquery.Document) [][]string {
 			items = append([]string{id, etaOr, shipDate, pickUp, delivery, itemNum}, items...)
 			data = append(data, items)
 
-			// sliceをリセットする
 			items = nil
 		}
 	}
