@@ -54,6 +54,7 @@ func (op *yamatoOperator) TrackShipments(id string) error {
 	return nil
 }
 
+// headerはhtmlからパースした結果をしようしていないので、実際のheaderであることは保証されていない
 func (op *yamatoOperator) headers() []string {
 	return []string{
 		"伝票番号",

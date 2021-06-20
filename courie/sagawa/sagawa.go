@@ -47,6 +47,7 @@ func (op *sagawaOperator) TrackShipment(id string) error {
 	return nil
 }
 
+// headerはhtmlからパースした結果をしようしていないので、実際のheaderであることは保証されていない
 func (op *sagawaOperator) headers() []string {
 	return []string{
 		"お問い合せ送り状NO",
