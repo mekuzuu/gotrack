@@ -15,7 +15,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const truckingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
+const trackingURL = "https://toi.kuronekoyamato.co.jp/cgi-bin/tneko"
 
 type yamatoOperator struct {
 	tableWriterOP tablewriter.ITableWriterOperator
@@ -34,7 +34,7 @@ func (op *yamatoOperator) TrackShipments(id string) error {
 	queryParams.Add("number00", "1")
 	queryParams.Add("number01", id)
 
-	resp, err := http.PostForm(truckingURL, queryParams)
+	resp, err := http.PostForm(trackingURL, queryParams)
 	if err != nil {
 		return err
 	}

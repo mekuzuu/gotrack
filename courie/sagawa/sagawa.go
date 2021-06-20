@@ -10,7 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-const truckingURL = "http://k2k.sagawa-exp.co.jp/p/web/okurijosearch.do?okurijoNo="
+const trackingURL = "http://k2k.sagawa-exp.co.jp/p/web/okurijosearch.do?okurijoNo="
 
 type sagawaOperator struct {
 	tableWriterOP tablewriter.ITableWriterOperator
@@ -25,7 +25,7 @@ func NewSagawaOperator(
 }
 
 func (op *sagawaOperator) TrackShipment(id string) error {
-	resp, err := http.Get(truckingURL + id)
+	resp, err := http.Get(trackingURL + id)
 	if err != nil {
 		return err
 	}
