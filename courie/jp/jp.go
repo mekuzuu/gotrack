@@ -1,7 +1,6 @@
 package jp
 
 import (
-	"fmt"
 	"strings"
 
 	"gotrack/tablewriter"
@@ -73,19 +72,45 @@ func (op *jpOperator) parseData(doc *goquery.Document) [][]string {
 	// 付加サービス
 	additionalService = content.Find(".tableType01.txt_c.m_b5 > tbody > tr > td.w_100").Text()
 
-	var dates []string
+	var deliveryStatus []string
+	//var dates, statuses, details []string
 	content.Find(".tableType01.txt_c.m_b5 > tbody > tr").Each(func(i int, s *goquery.Selection) {
+		// 状態発生日
 		date := s.Find("td.w_120").Text()
 		if len(date) > 0 && date != "" {
-			dates = append(dates, date)
+			deliveryStatus = append(deliveryStatus, date)
 		}
+
+		// 配送履歴
+		status := s.Find("td.w_150").Text()
+		if len(status) > 0 && status != "" {
+			deliveryStatus = append(deliveryStatus, status)
+		}
+
+		// 詳細
+		//detail := s.Find("td.w_105").Text()
+		//if len(detail) > 0 && detail != "" {
+		//	//items = append(items, detail)
+		//	details = append(details, detail)
+		//}
 	})
 
-	// TODO: delete
-	fmt.Println(id)
-	fmt.Println(itemType)
-	fmt.Println(additionalService)
-	fmt.Println(dates)
+	var data [][]string
+	var items = make([]string, 0, 5)
+	for _, v := range deliveryStatus {
+		if len(items) < 2 {
+			items = append(items, v)
+		}
 
-	return [][]string{}
+		if len(items) == 2 {
+			items = append([]string{id, itemType, additionalService}, items...)
+			data = append(data, items)
+
+			items = nil
+		}
+	}
+
+	data = append(data, items)
+
+	return data
 }
