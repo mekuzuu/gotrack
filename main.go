@@ -69,10 +69,5 @@ func run() int {
 		}
 	}
 
-	if err := jpOP.TrackShipment("ET700332656VN"); err != nil {
-		fmt.Println(err.Error())
-		return 1
-	}
-
 	return 0
 }
